@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="RemoteTargetsManager">
+    <targets>
+      <target name="WSL" type="wsl" uuid="12d9b21a-c078-4cf5-9710-9a0cd24fb815">
+        <config>
+          <option name="distributionMsId" value="Ubuntu" />
+        </config>
+        <ContributedStateBase type="JavaLanguageRuntime">
+          <config>
+            <option name="homePath" value="/home/vinicius.jimenez/.jdks/corretto-21.0.4" />
+          </config>
+        </ContributedStateBase>
+      </target>
+    </targets>
+  </component>
+</project>
