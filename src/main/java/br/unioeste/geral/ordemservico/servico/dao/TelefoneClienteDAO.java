@@ -30,20 +30,24 @@ public class TelefoneClienteDAO {
     public List<Telefone> obterTelefonesCliente(Long idCliente) throws Exception {
         String sql = "SELECT * FROM telefone_cliente WHERE id_cliente = ?";
 
+        Connection conexao = null;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+
         List<Telefone> telefones = new ArrayList<>();
 
         try{
-            Connection conexao = conexaoBD.getConexaoBD();
-            PreparedStatement stmt = conexao.prepareStatement(sql);
+            conexao = conexaoBD.getConexaoBD();
+            stmt = conexao.prepareStatement(sql);
 
             stmt.setLong(1, idCliente);
 
             conexao.setAutoCommit(false);
 
-            try( ResultSet resultSet = stmt.executeQuery()){
-                while (resultSet.next()){
-                    telefones.add(criarTelefoneBO(resultSet));
-                }
+            resultSet = stmt.executeQuery();
+
+            while (resultSet.next()){
+                telefones.add(criarTelefoneBO(resultSet));
             }
 
             conexao.commit();
@@ -52,6 +56,9 @@ public class TelefoneClienteDAO {
             throw new EnderecoException("Não foi possível encontrar telefones para o cliente com ID: " + idCliente);
         } catch (Exception e) {
             throw new RuntimeException("Não foi possível estabelecer conexão com o banco de dados");
+        }
+        finally {
+            conexaoBD.encerrarConexoes(resultSet, stmt, conexao);
         }
 
         return telefones;

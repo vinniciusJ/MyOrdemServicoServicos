@@ -2,6 +2,7 @@ package br.unioeste.geral.ordemservico.servico.dao;
 
 import br.unioeste.apoio.bd.ConexaoBD;
 import br.unioeste.geral.endereco.servico.exception.EnderecoException;
+import br.unioeste.geral.ordemservico.servico.exception.OrdemServicoException;
 import br.unioeste.geral.pessoa.bo.email.Email;
 
 import java.sql.Connection;
@@ -21,28 +22,35 @@ public class EmailClienteDAO {
     public List<Email> obterEmailsCliente(Long idCliente) throws Exception {
         String sql = "SELECT * FROM email_cliente WHERE id_cliente = ?";
 
-        List<Email> emails = new ArrayList<Email>();
+        Connection conexao = null;
+        PreparedStatement stmt = null;
+        ResultSet resultSet = null;
+
+        List<Email> emails = new ArrayList<>();
 
         try{
-            Connection conexao = conexaoBD.getConexaoBD();
-            PreparedStatement stmt = conexao.prepareStatement(sql);
+            conexao = conexaoBD.getConexaoBD();
+            stmt = conexao.prepareStatement(sql);
 
             stmt.setLong(1, idCliente);
 
             conexao.setAutoCommit(false);
 
-            try( ResultSet resultSet = stmt.executeQuery()){
-                while (resultSet.next()){
-                    emails.add(criarEmailBO(resultSet));
-                }
+            resultSet = stmt.executeQuery();
+
+            while (resultSet.next()){
+                emails.add(criarEmailBO(resultSet));
             }
 
             conexao.commit();
         }
         catch(SQLException e){
-            throw new EnderecoException("Não foi possível encontrar emails para o cliente com ID: " + idCliente);
+            throw new OrdemServicoException("Não foi possível encontrar emails para o cliente com ID: " + idCliente);
         } catch (Exception e) {
             throw new RuntimeException("Não foi possível estabelecer conexão com o banco de dados");
+        }
+        finally {
+            conexaoBD.encerrarConexoes(resultSet, stmt, conexao);
         }
 
         return emails;
