@@ -1,7 +1,6 @@
-package br.unioeste.geral.ordemservico.servico.dao;
+package br.unioeste.geral.ordemservico.servico.dao.funcionario;
 
 import br.unioeste.apoio.bd.ConexaoBD;
-import br.unioeste.geral.endereco.servico.exception.EnderecoException;
 import br.unioeste.geral.ordemservico.servico.exception.OrdemServicoException;
 import br.unioeste.geral.pessoa.bo.email.Email;
 
@@ -12,15 +11,15 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmailClienteDAO {
+public class EmailFuncionarioDAO {
     private final ConexaoBD conexaoBD;
 
-    public EmailClienteDAO() {
+    public EmailFuncionarioDAO() {
         conexaoBD = new ConexaoBD();
     }
 
-    public List<Email> obterEmailsCliente(Long idCliente) throws Exception {
-        String sql = "SELECT * FROM email_cliente WHERE id_cliente = ?";
+    public List<Email> obterEmailsFuncionario(Long idFuncionario) throws Exception {
+        String sql = "SELECT * FROM email_funcionario WHERE id_funcionario = ?";
 
         Connection conexao = null;
         PreparedStatement stmt = null;
@@ -32,7 +31,7 @@ public class EmailClienteDAO {
             conexao = conexaoBD.getConexaoBD();
             stmt = conexao.prepareStatement(sql);
 
-            stmt.setLong(1, idCliente);
+            stmt.setLong(1, idFuncionario);
 
             conexao.setAutoCommit(false);
 
@@ -45,7 +44,7 @@ public class EmailClienteDAO {
             conexao.commit();
         }
         catch(SQLException e){
-            throw new OrdemServicoException("Não foi possível encontrar emails para o cliente com ID: " + idCliente);
+            throw new OrdemServicoException("Não foi possível encontrar emails para o funcionário com ID: " + idFuncionario);
         } catch (Exception e) {
             throw new RuntimeException("Não foi possível estabelecer conexão com o banco de dados");
         }
@@ -56,13 +55,13 @@ public class EmailClienteDAO {
         return emails;
     }
 
-    public void inserirEmails(Long idCliente, List<Email> emails, Connection conexao) throws Exception {
-        String sql = "INSERT INTO email_cliente (endereco, id_cliente) VALUES (?,?)";
+    public void inserirEmails(Long idFuncionario, List<Email> emails, Connection conexao) throws Exception {
+        String sql = "INSERT INTO email_funcionario (endereco, id_funcionario) VALUES (?,?)";
 
         try(PreparedStatement stmt = conexao.prepareStatement(sql)){
             for(Email email : emails){
                 stmt.setString(1, email.getEndereco());
-                stmt.setLong(2, idCliente);
+                stmt.setLong(2, idFuncionario);
 
                 stmt.executeUpdate();
             }

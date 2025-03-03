@@ -1,4 +1,4 @@
-package br.unioeste.geral.ordemservico.servico.dao;
+package br.unioeste.geral.ordemservico.servico.dao.funcionario;
 
 import br.unioeste.apoio.bd.ConexaoBD;
 import br.unioeste.geral.endereco.bo.endereco.Endereco;
@@ -6,6 +6,7 @@ import br.unioeste.geral.endereco.bo.enderecoespecifico.EnderecoEspecifico;
 import br.unioeste.geral.endereco.servico.exception.EnderecoException;
 import br.unioeste.geral.endereco.servico.service.UCEnderecoServicos;
 import br.unioeste.geral.ordemservico.bo.cliente.Cliente;
+import br.unioeste.geral.ordemservico.bo.funcionario.Funcionario;
 import br.unioeste.geral.ordemservico.servico.exception.OrdemServicoException;
 import br.unioeste.geral.pessoa.bo.email.Email;
 import br.unioeste.geral.pessoa.bo.telefone.Telefone;
@@ -17,30 +18,30 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClienteDAO {
+public class FuncionarioDAO {
     private final ConexaoBD conexaoBD;
 
-    private final EmailClienteDAO emailClienteDAO;
-    private final TelefoneClienteDAO telefoneClienteDAO;
+    private final EmailFuncionarioDAO emailFuncionarioDAO;
+    private final TelefoneFuncionarioDAO telefoneFuncionarioDAO;
     private final UCEnderecoServicos enderecoServicos;
 
-    public ClienteDAO(){
+    public FuncionarioDAO(){
         conexaoBD = new ConexaoBD();
 
-        emailClienteDAO = new EmailClienteDAO();
-        telefoneClienteDAO = new TelefoneClienteDAO();
+        emailFuncionarioDAO = new EmailFuncionarioDAO();
+        telefoneFuncionarioDAO = new TelefoneFuncionarioDAO();
 
         enderecoServicos = new UCEnderecoServicos();
     }
 
-    public List<Cliente> obterClientes() throws Exception {
-        String sql = "SELECT * FROM cliente";
+    public List<Funcionario> obterFuncionarios() throws Exception {
+        String sql = "SELECT * FROM funcionario";
 
         Connection conexao = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
 
-        List<Cliente> clientes = new ArrayList<>();
+        List<Funcionario> funcionarios = new ArrayList<>();
 
         try{
             conexao = conexaoBD.getConexaoBD();
@@ -51,13 +52,13 @@ public class ClienteDAO {
             resultSet = stmt.executeQuery();
 
             while (resultSet.next()){
-                clientes.add(criarClienteBO(resultSet));
+                funcionarios.add(criarFuncionarioBO(resultSet));
             }
 
             conexao.commit();
         }
         catch(SQLException e){
-            throw new EnderecoException("Não foi possível buscar todos os clientes");
+            throw new EnderecoException("Não foi possível buscar todos os funcionários");
         } catch (Exception e) {
             throw new RuntimeException("Não foi possível estabelecer conexão com o banco de dados");
         }
@@ -65,17 +66,17 @@ public class ClienteDAO {
             conexaoBD.encerrarConexoes(resultSet, stmt, conexao);
         }
 
-        return clientes;
+        return funcionarios;
     }
 
-    public Cliente obterClientePorID(Long id) throws Exception {
-        String sql = "SELECT * FROM cliente WHERE id = ?";
+    public Funcionario obterFuncionarioPorID(Long id) throws Exception {
+        String sql = "SELECT * FROM funcionario WHERE id = ?";
 
         Connection conexao = null;
         PreparedStatement stmt = null;
         ResultSet resultSet = null;
 
-        Cliente cliente = null;
+        Funcionario funcionario = null;
 
         try{
             conexao = conexaoBD.getConexaoBD();
@@ -87,13 +88,13 @@ public class ClienteDAO {
             resultSet = stmt.executeQuery();
 
             if(resultSet.next()){
-                cliente = criarClienteBO(resultSet);
+                funcionario = criarFuncionarioBO(resultSet);
             }
 
             conexao.commit();
         }
         catch(SQLException e){
-            throw new EnderecoException("Não foi possível buscar todos os clientes");
+            throw new EnderecoException("Não foi possível buscar o funcionário com ID: " + id);
         } catch (Exception e) {
             throw new RuntimeException("Não foi possível estabelecer conexão com o banco de dados");
         }
@@ -101,11 +102,11 @@ public class ClienteDAO {
             conexaoBD.encerrarConexoes(resultSet, stmt, conexao);
         }
 
-        return cliente;
+        return funcionario;
     }
 
-    public Cliente obterClientePorCPF(String cpf) throws Exception {
-        String sql = "SELECT * FROM cliente WHERE cpf = ?";
+    public Funcionario obterFuncionarioPorCPF(String cpf) throws Exception {
+        String sql = "SELECT * FROM funcionario WHERE cpf = ?";
 
         Connection conexao = null;
         PreparedStatement stmt = null;
@@ -121,13 +122,13 @@ public class ClienteDAO {
             resultSet = stmt.executeQuery();
 
             if(resultSet.next()){
-                return criarClienteBO(resultSet);
+                return criarFuncionarioBO(resultSet);
             }
 
             conexao.commit();
         }
         catch(SQLException e){
-            throw new EnderecoException("Não foi possível buscar todos os clientes");
+            throw new EnderecoException("Não foi possível buscar todos os funcionários");
         } catch (Exception e) {
             throw new RuntimeException("Não foi possível estabelecer conexão com o banco de dados");
         }
@@ -138,9 +139,9 @@ public class ClienteDAO {
         return null;
     }
 
-    public Cliente inserirCliente(Cliente cliente) throws Exception {
+    public Funcionario inserirFuncionario(Funcionario funcionario) throws Exception {
         String sql = """
-                    INSERT INTO cliente (primeiro_nome, nome_do_meio, ultimo_nome, nome_social, complemento_endereco, numero_endereco, cpf, id_endereco)
+                    INSERT INTO funcionario (primeiro_nome, nome_do_meio, ultimo_nome, nome_social, complemento_endereco, numero_endereco, cpf, id_endereco)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     """;
 
@@ -154,15 +155,15 @@ public class ClienteDAO {
 
             conexao.setAutoCommit(false);
 
-            EnderecoEspecifico endereco = cliente.getEndereco();
+            EnderecoEspecifico endereco = funcionario.getEndereco();
 
-            stmt.setString(1, cliente.getPrimeiroNome());
-            stmt.setString(2, cliente.getNomeDoMeio());
-            stmt.setString(3, cliente.getUltimoNome());
-            stmt.setString(4, cliente.getNomeSocial());
+            stmt.setString(1, funcionario.getPrimeiroNome());
+            stmt.setString(2, funcionario.getNomeDoMeio());
+            stmt.setString(3, funcionario.getUltimoNome());
+            stmt.setString(4, funcionario.getNomeSocial());
             stmt.setString(5, endereco.getComplementoEndereco());
             stmt.setString(6, endereco.getNumeroEndereco());
-            stmt.setString(7, cliente.getCpf());
+            stmt.setString(7, funcionario.getCpf());
             stmt.setLong(8, endereco.getEndereco().getId());
 
             int registrosInseridos = stmt.executeUpdate();
@@ -176,15 +177,15 @@ public class ClienteDAO {
             if(resultSet.next()){
                 long id = resultSet.getLong(1);
 
-                cliente.setId(id);
+                funcionario.setId(id);
 
-                emailClienteDAO.inserirEmails(id, cliente.getEmails(), conexao);
-                telefoneClienteDAO.inserirTelefones(id, cliente.getTelefones(), conexao);
+                emailFuncionarioDAO.inserirEmails(id, funcionario.getEmails(), conexao);
+                telefoneFuncionarioDAO.inserirTelefones(id, funcionario.getTelefones(), conexao);
 
                 conexao.commit();
             }
             else {
-                throw new OrdemServicoException("Não foi possível cadastrar o cliente");
+                throw new OrdemServicoException("Não foi possível cadastrar o funcionário");
             }
         }
         catch(SQLException e){
@@ -192,7 +193,7 @@ public class ClienteDAO {
                 conexao.rollback();
             }
 
-            throw new OrdemServicoException("Não foi possível cadastrar o cliente");
+            throw new OrdemServicoException("Não foi possível cadastrar o funcionário");
         } catch (Exception e) {
             throw new RuntimeException("Não foi possível estabelecer conexão com o banco de dados");
         }
@@ -203,7 +204,7 @@ public class ClienteDAO {
         return null;
     }
 
-    private Cliente criarClienteBO(ResultSet resultSet) throws Exception {
+    private Funcionario criarFuncionarioBO(ResultSet resultSet) throws Exception {
         long id = resultSet.getLong("id");
         String primeiroNome = resultSet.getString("primeiro_nome");
         String nomeDoMeio = resultSet.getString("nome_do_meio");
@@ -217,23 +218,23 @@ public class ClienteDAO {
         Endereco endereco = enderecoServicos.obterEnderecoPorID(idEndereco);
         EnderecoEspecifico enderecoEspecifico = new EnderecoEspecifico(numeroEndereco, complementoEndereco, endereco);
 
-        List<Email> emails = emailClienteDAO.obterEmailsCliente(id);
-        List<Telefone> telefones = telefoneClienteDAO.obterTelefonesCliente(id);
+        List<Email> emails = emailFuncionarioDAO.obterEmailsFuncionario(id);
+        List<Telefone> telefones = telefoneFuncionarioDAO.obterTelefonesFuncionario(id);
 
-        Cliente cliente = new Cliente();
+        Funcionario funcionario = new Funcionario();
 
-        cliente.setId(id);
-        cliente.setPrimeiroNome(primeiroNome);
-        cliente.setNomeDoMeio(nomeDoMeio);
-        cliente.setUltimoNome(ultimoNome);
-        cliente.setNomeSocial(nomeSocial);
-        cliente.setNome(primeiroNome + " " + nomeDoMeio + " " + ultimoNome);
-        cliente.setCpf(cpf);
-        cliente.setEndereco(enderecoEspecifico);
-        cliente.setEmails(emails);
-        cliente.setTelefones(telefones);
+        funcionario.setId(id);
+        funcionario.setPrimeiroNome(primeiroNome);
+        funcionario.setNomeDoMeio(nomeDoMeio);
+        funcionario.setUltimoNome(ultimoNome);
+        funcionario.setNomeSocial(nomeSocial);
+        funcionario.setNome(primeiroNome + " " + nomeDoMeio + " " + ultimoNome);
+        funcionario.setCpf(cpf);
+        funcionario.setEndereco(enderecoEspecifico);
+        funcionario.setEmails(emails);
+        funcionario.setTelefones(telefones);
 
-        return cliente;
+        return funcionario;
     }
 
 }

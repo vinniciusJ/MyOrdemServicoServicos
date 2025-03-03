@@ -2,7 +2,7 @@ package br.unioeste.geral.ordemservico.servico.service;
 
 import br.unioeste.geral.ordemservico.bo.cliente.Cliente;
 import br.unioeste.geral.ordemservico.servico.col.ClienteCOL;
-import br.unioeste.geral.ordemservico.servico.dao.ClienteDAO;
+import br.unioeste.geral.ordemservico.servico.dao.cliente.ClienteDAO;
 import br.unioeste.geral.ordemservico.servico.exception.OrdemServicoException;
 
 import java.util.List;
