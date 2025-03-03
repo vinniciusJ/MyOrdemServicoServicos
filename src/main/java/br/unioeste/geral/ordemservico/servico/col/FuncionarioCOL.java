@@ -18,15 +18,11 @@ public class FuncionarioCOL {
     private final EnderecoEspecificoCOL enderecoEspecificoCOL;
     private final CPFCOL cpfCOL;
 
-    private final FuncionarioDAO funcionarioDAO;
-
     public FuncionarioCOL(){
         telefoneCOL = new TelefoneCOL();
         emailCOL = new EmailCOL();
         enderecoEspecificoCOL = new EnderecoEspecificoCOL();
         cpfCOL = new CPFCOL();
-
-        funcionarioDAO = new FuncionarioDAO();
     }
 
     public boolean validarID(Long id){
@@ -48,14 +44,6 @@ public class FuncionarioCOL {
                 enderecoEspecificoCOL.validarEnderecoEspecifico(enderecoEspecifico) &&
                 emailCOL.validarEmails(emails) &&
                 telefoneCOL.validarTelefones(telefones);
-    }
-
-    public boolean validarFuncionarioExiste(Funcionario funcionario) throws Exception {
-        if(funcionario == null){
-            return false;
-        }
-
-        return funcionarioDAO.obterFuncionarioPorCPF(funcionario.getCpf()) != null;
     }
 
     private boolean validarStringVaziaOuNula(String string){

@@ -1,6 +1,7 @@
 package br.unioeste.geral.ordemservico.servico.dao.tiposervico;
 
 import br.unioeste.apoio.bd.ConexaoBD;
+import br.unioeste.geral.ordemservico.bo.servico.Servico;
 import br.unioeste.geral.ordemservico.bo.tiposervico.TipoServico;
 import br.unioeste.geral.ordemservico.servico.exception.OrdemServicoException;
 
@@ -11,34 +12,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TipoServicoDAO {
-    private final ConexaoBD conexaoBD;
     private final Connection conexao;
 
     public TipoServicoDAO(Connection conexao) {
         this.conexao = conexao;
-        this.conexaoBD = new ConexaoBD();
     }
 
     public TipoServico obterTipoServicoPorID(Long id) throws Exception {
         String sql = "SELECT * from tipo_servico WHERE id = ?";
 
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
         TipoServico tipoServico = null;
 
-        try{
-            stmt = conexao.prepareStatement(sql);
-            resultSet = stmt.executeQuery();
+        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
+            stmt.setLong(1, id);
 
-            if(resultSet.next()){
-                tipoServico = instanciarTipoServicoBO(resultSet);
+            try(ResultSet resultSet = stmt.executeQuery()){
+                if(resultSet.next()){
+                    tipoServico = criarTipoServicoBO(resultSet);
+                }
             }
         }
         catch (Exception exception){
-            throw new OrdemServicoException("Não foi possível obter todos os tipos de servicos");
-        }
-        finally {
-            conexaoBD.encerrarConexoes(resultSet, stmt,  null);
+            throw new OrdemServicoException("Não foi possível obter o tipo de serviço com ID: " + id);
         }
 
         return tipoServico;
@@ -47,16 +42,13 @@ public class TipoServicoDAO {
     public List<TipoServico> obterTiposServicos() throws OrdemServicoException {
         String sql = "SELECT * from tipo_servico";
 
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
         List<TipoServico> tiposServicos = new ArrayList<>();
 
-        try{
-            stmt = conexao.prepareStatement(sql);
-            resultSet = stmt.executeQuery();
-
-            while (resultSet.next()){
-                tiposServicos.add(instanciarTipoServicoBO(resultSet));
+        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
+            try(ResultSet resultSet = stmt.executeQuery()){
+                while(resultSet.next()){
+                    tiposServicos.add(criarTipoServicoBO(resultSet));
+                }
             }
         }
         catch (Exception exception){
@@ -69,37 +61,30 @@ public class TipoServicoDAO {
     public Long inserirTipoServico(TipoServico tipoServico) throws OrdemServicoException {
         String sql = "INSERT INTO tipo_servico (nome, valor_referencia) VALUES (?, ?)";
 
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
-
-        try{
-            stmt = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-
+        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
             stmt.setString(1, tipoServico.getNome());
             stmt.setDouble(2, tipoServico.getValorReferencia());
 
             int resultado = stmt.executeUpdate();
 
             if(resultado == 0){
-                throw new OrdemServicoException("Não foi possível cadastrrar o cliente");
+                throw new OrdemServicoException("Não foi possível cadastrar o tipo de serviço");
             }
 
-            resultSet = stmt.getGeneratedKeys();
-
-            if(resultSet.next()){
-                long id = resultSet.getLong(1);
-
-                tipoServico.setId(id);
+            try(ResultSet resultSet = stmt.getGeneratedKeys()) {
+                if(resultSet.next()){
+                    tipoServico.setId(resultSet.getLong(1));
+                }
             }
         }
-        catch (Exception ex){
-            throw new OrdemServicoException("Não foi possível cadastrrar o cliente");
+        catch (Exception e){
+            throw new OrdemServicoException("Não foi possível cadastrar o tipo de  serviço");
         }
 
         return tipoServico.getId();
     }
 
-    private TipoServico instanciarTipoServicoBO(ResultSet resultSet) throws Exception {
+    private TipoServico criarTipoServicoBO(ResultSet resultSet) throws Exception {
         long id = resultSet.getLong("id");
         String nome = resultSet.getString("nome");
         double valorRef = resultSet.getDouble("valor_referencia");

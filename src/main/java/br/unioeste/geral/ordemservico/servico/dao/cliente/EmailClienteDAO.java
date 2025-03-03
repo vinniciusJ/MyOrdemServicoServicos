@@ -1,71 +1,66 @@
 package br.unioeste.geral.ordemservico.servico.dao.cliente;
 
-import br.unioeste.apoio.bd.ConexaoBD;
 import br.unioeste.geral.ordemservico.servico.exception.OrdemServicoException;
 import br.unioeste.geral.pessoa.bo.email.Email;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class EmailClienteDAO {
-    private final ConexaoBD conexaoBD;
+    private final Connection conexao;
 
-    public EmailClienteDAO() {
-        conexaoBD = new ConexaoBD();
+    public EmailClienteDAO(Connection conexao) {
+        this.conexao = conexao;
     }
 
     public List<Email> obterEmailsCliente(Long idCliente) throws Exception {
         String sql = "SELECT * FROM email_cliente WHERE id_cliente = ?";
 
-        Connection conexao = null;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
-
         List<Email> emails = new ArrayList<>();
 
-        try{
-            conexao = conexaoBD.getConexaoBD();
-            stmt = conexao.prepareStatement(sql);
-
+        try(PreparedStatement stmt = conexao.prepareStatement(sql)) {
             stmt.setLong(1, idCliente);
 
-            conexao.setAutoCommit(false);
-
-            resultSet = stmt.executeQuery();
-
-            while (resultSet.next()){
-                emails.add(criarEmailBO(resultSet));
+            try(ResultSet resultSet = stmt.executeQuery()) {
+                while (resultSet.next()){
+                    emails.add(criarEmailBO(resultSet));
+                }
             }
-
-            conexao.commit();
         }
-        catch(SQLException e){
-            throw new OrdemServicoException("Não foi possível encontrar emails para o cliente com ID: " + idCliente);
-        } catch (Exception e) {
-            throw new RuntimeException("Não foi possível estabelecer conexão com o banco de dados");
-        }
-        finally {
-            conexaoBD.encerrarConexoes(resultSet, stmt, conexao);
+        catch(Exception e){
+            throw new OrdemServicoException("Não foi possível obter todos os emails do cliente com ID: " + idCliente);
         }
 
         return emails;
     }
 
-    public void inserirEmails(Long idCliente, List<Email> emails, Connection conexao) throws Exception {
-        String sql = "INSERT INTO email_cliente (endereco, id_cliente) VALUES (?,?)";
+    public Long inserirEmail(Long idCliente, Email email) throws Exception {
+        String sql = "INSERT INTO email_cliente (id_cliente, email) VALUES (?, ?)";
 
         try(PreparedStatement stmt = conexao.prepareStatement(sql)){
-            for(Email email : emails){
-                stmt.setString(1, email.getEndereco());
-                stmt.setLong(2, idCliente);
+            stmt.setString(1, email.getEndereco());
+            stmt.setLong(2, idCliente);
 
-                stmt.executeUpdate();
+            int resultado = stmt.executeUpdate();
+
+            if(resultado == 0){
+                throw new OrdemServicoException("Não foi possível cadastrar o email " + email.getEndereco());
+            }
+
+            try(ResultSet resultSet = stmt.getGeneratedKeys()) {
+                if(resultSet.next()){
+                    email.setId(resultSet.getLong(1));
+                }
             }
         }
+        catch (Exception e){
+            throw new OrdemServicoException("Não foi possível cadastrar o email " + email.getEndereco());
+        }
+
+        return email.getId();
     }
 
     private Email criarEmailBO(ResultSet resultSet) throws Exception {

@@ -19,61 +19,56 @@ public class UCTipoServicoServicos {
         conexaoBD = new ConexaoBD();
     }
 
-    public List<TipoServico> obterTiposServicos() throws OrdemServicoException, Exception {
-        Connection conexao = null;
-        List<TipoServico> tipoServicos = new ArrayList<TipoServico>();
+    public List<TipoServico> obterTiposServicos() throws Exception {
+        List<TipoServico> tipoServicos = new ArrayList<>();
 
-        try{
-            conexao = conexaoBD.getConexaoBD();
+        try(Connection conexao = conexaoBD.getConexaoBD()){
             TipoServicoDAO tipoServicoDAO = new TipoServicoDAO(conexao);
 
             conexao.setAutoCommit(false);
 
-            tipoServicos = tipoServicoDAO.obterTiposServicos();
+            try{
+                tipoServicos = tipoServicoDAO.obterTiposServicos();
 
-            conexao.commit();
-        }
-        catch(Exception exception){
-            if(exception instanceof OrdemServicoException){
-                throw exception;
+                conexao.commit();
             }
+            catch (Exception exception){
+                if(exception instanceof OrdemServicoException){
+                    throw exception;
+                }
 
-            throw new OrdemServicoException("Houve um problema interno: " + exception.getMessage());
-        }
-        finally {
-            conexaoBD.encerrarConexoes(null, null, conexao);
+                throw new OrdemServicoException("Houve um erro interno: " + exception.getMessage());
+            }
         }
 
         return tipoServicos;
     }
+
 
     public TipoServico obterTipoServicoPorID(Long id) throws OrdemServicoException, Exception {
         if(!tipoServicoCOL.validarID(id)){
             throw new OrdemServicoException("ID inválido: " + id);
         }
 
-        Connection conexao = null;
         TipoServico tipoServico = null;
 
-        try{
-            conexao = conexaoBD.getConexaoBD();
+        try(Connection conexao = conexaoBD.getConexaoBD()){
             TipoServicoDAO tipoServicoDAO = new TipoServicoDAO(conexao);
 
             conexao.setAutoCommit(false);
 
-            tipoServico = tipoServicoDAO.obterTipoServicoPorID(id);
+            try{
+                tipoServico = tipoServicoDAO.obterTipoServicoPorID(id);
 
-            conexao.commit();
-        }
-        catch(Exception exception){
-            if(exception instanceof OrdemServicoException){
-                throw (OrdemServicoException) exception;
+                conexao.commit();
             }
+            catch (Exception exception){
+                if(exception instanceof OrdemServicoException){
+                    throw exception;
+                }
 
-            throw new OrdemServicoException("Houve um problema interno: " + exception.getMessage());
-        }
-        finally {
-            conexaoBD.encerrarConexoes(null, null, conexao);
+                throw new OrdemServicoException("Houve um erro interno: " + exception.getMessage());
+            }
         }
 
         return tipoServico;
@@ -84,37 +79,31 @@ public class UCTipoServicoServicos {
             throw new OrdemServicoException("Tipo de serviço inválido");
         }
 
-        Connection conexao = null;
-
-        try{
-            conexao = conexaoBD.getConexaoBD();
+        try(Connection conexao = conexaoBD.getConexaoBD()){
             TipoServicoDAO tipoServicoDAO = new TipoServicoDAO(conexao);
 
             conexao.setAutoCommit(false);
 
-            Long id = tipoServicoDAO.inserirTipoServico(tipoServico);
+            try{
+                Long id = tipoServicoDAO.inserirTipoServico(tipoServico);
 
-            if(id == null){
-                throw new OrdemServicoException("Não foi possível cadastrar o tipo de serviço");
+                if(id == null){
+                    throw new OrdemServicoException("Não foi possível cadastrar o tipo de serviço");
+                }
+
+                tipoServico.setId(id);
+
+                conexao.commit();
             }
-
-            tipoServico.setId(id);
-
-            conexao.commit();
-        }
-        catch(Exception exception){
-            if(conexao != null){
+            catch(Exception exception){
                 conexao.rollback();
-            }
 
-            if(exception instanceof OrdemServicoException){
-                throw (OrdemServicoException) exception;
-            }
+                if(exception instanceof OrdemServicoException){
+                    throw exception;
+                }
 
-            throw new OrdemServicoException("Houve um problema interno: " + exception.getMessage());
-        }
-        finally {
-            conexaoBD.encerrarConexoes(null, null, conexao);
+                throw new OrdemServicoException("Houve um problema interno: " + exception.getMessage());
+            }
         }
 
         return tipoServico;

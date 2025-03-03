@@ -1,10 +1,8 @@
 package br.unioeste.geral.ordemservico.servico.dao.cliente;
 
-import br.unioeste.apoio.bd.ConexaoBD;
 import br.unioeste.geral.endereco.bo.endereco.Endereco;
 import br.unioeste.geral.endereco.bo.enderecoespecifico.EnderecoEspecifico;
-import br.unioeste.geral.endereco.servico.exception.EnderecoException;
-import br.unioeste.geral.endereco.servico.service.UCEnderecoServicos;
+import br.unioeste.geral.endereco.servico.dao.EnderecoDAO;
 import br.unioeste.geral.ordemservico.bo.cliente.Cliente;
 import br.unioeste.geral.ordemservico.servico.exception.OrdemServicoException;
 import br.unioeste.geral.pessoa.bo.email.Email;
@@ -13,56 +11,38 @@ import br.unioeste.geral.pessoa.bo.telefone.Telefone;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClienteDAO {
-    private final ConexaoBD conexaoBD;
+    private final Connection conexao;
 
     private final EmailClienteDAO emailClienteDAO;
     private final TelefoneClienteDAO telefoneClienteDAO;
-    private final UCEnderecoServicos enderecoServicos;
+    private final EnderecoDAO enderecoDAO;
 
-    public ClienteDAO(){
-        conexaoBD = new ConexaoBD();
+    public ClienteDAO(Connection conexao){
+        this.conexao = conexao;
 
-        emailClienteDAO = new EmailClienteDAO();
-        telefoneClienteDAO = new TelefoneClienteDAO();
-
-        enderecoServicos = new UCEnderecoServicos();
+        this.emailClienteDAO = new EmailClienteDAO(conexao);
+        this.telefoneClienteDAO = new TelefoneClienteDAO(conexao);
+        this.enderecoDAO = new EnderecoDAO();
     }
 
     public List<Cliente> obterClientes() throws Exception {
         String sql = "SELECT * FROM cliente";
 
-        Connection conexao = null;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
-
         List<Cliente> clientes = new ArrayList<>();
 
-        try{
-            conexao = conexaoBD.getConexaoBD();
-            stmt = conexao.prepareStatement(sql);
-
-            conexao.setAutoCommit(false);
-
-            resultSet = stmt.executeQuery();
-
-            while (resultSet.next()){
-                clientes.add(criarClienteBO(resultSet));
+        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
+            try(ResultSet resultSet = stmt.executeQuery()){
+                while (resultSet.next()){
+                    clientes.add(criarClienteBO(resultSet));
+                }
             }
-
-            conexao.commit();
         }
-        catch(SQLException e){
-            throw new EnderecoException("Não foi possível buscar todos os clientes");
-        } catch (Exception e) {
-            throw new RuntimeException("Não foi possível estabelecer conexão com o banco de dados");
-        }
-        finally {
-            conexaoBD.encerrarConexoes(resultSet, stmt, conexao);
+        catch (Exception e){
+            throw new OrdemServicoException("Não foi possível obter todos os clientes");
         }
 
         return clientes;
@@ -71,89 +51,52 @@ public class ClienteDAO {
     public Cliente obterClientePorID(Long id) throws Exception {
         String sql = "SELECT * FROM cliente WHERE id = ?";
 
-        Connection conexao = null;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
+        Cliente client = null;
 
-        Cliente cliente = null;
-
-        try{
-            conexao = conexaoBD.getConexaoBD();
-            stmt = conexao.prepareStatement(sql);
-
-            conexao.setAutoCommit(false);
-
+        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
             stmt.setLong(1, id);
-            resultSet = stmt.executeQuery();
 
-            if(resultSet.next()){
-                cliente = criarClienteBO(resultSet);
+            try(ResultSet resultSet = stmt.executeQuery()){
+                if (resultSet.next()){
+                    client = criarClienteBO(resultSet);
+                }
             }
-
-            conexao.commit();
         }
-        catch(SQLException e){
-            throw new EnderecoException("Não foi possível buscar todos os clientes");
-        } catch (Exception e) {
-            throw new RuntimeException("Não foi possível estabelecer conexão com o banco de dados");
-        }
-        finally {
-            conexaoBD.encerrarConexoes(resultSet, stmt, conexao);
+        catch (Exception e){
+            throw new OrdemServicoException("Não foi possível obter o cliente com ID " + id);
         }
 
-        return cliente;
+        return client;
     }
 
     public Cliente obterClientePorCPF(String cpf) throws Exception {
         String sql = "SELECT * FROM cliente WHERE cpf = ?";
 
-        Connection conexao = null;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
+        Cliente client = null;
 
-        try{
-            conexao = conexaoBD.getConexaoBD();
-            stmt = conexao.prepareStatement(sql);
-
-            conexao.setAutoCommit(false);
-
+        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
             stmt.setString(1, cpf);
-            resultSet = stmt.executeQuery();
 
-            if(resultSet.next()){
-                return criarClienteBO(resultSet);
+            try(ResultSet resultSet = stmt.executeQuery()){
+                if (resultSet.next()){
+                    client = criarClienteBO(resultSet);
+                }
             }
-
-            conexao.commit();
         }
-        catch(SQLException e){
-            throw new EnderecoException("Não foi possível buscar todos os clientes");
-        } catch (Exception e) {
-            throw new RuntimeException("Não foi possível estabelecer conexão com o banco de dados");
-        }
-        finally {
-            conexaoBD.encerrarConexoes(resultSet, stmt, conexao);
+        catch (Exception e){
+            throw new OrdemServicoException("Não foi possível obter o cliente com CPF " + cpf);
         }
 
-        return null;
+        return client;
     }
 
-    public Cliente inserirCliente(Cliente cliente) throws Exception {
+    public Long inserirCliente(Cliente cliente) throws Exception {
         String sql = """
                     INSERT INTO cliente (primeiro_nome, nome_do_meio, ultimo_nome, nome_social, complemento_endereco, numero_endereco, cpf, id_endereco)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     """;
 
-        Connection conexao = null;
-        PreparedStatement stmt = null;
-        ResultSet resultSet = null;
-
-        try{
-            conexao = conexaoBD.getConexaoBD();
-            stmt = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS);
-
-            conexao.setAutoCommit(false);
-
+        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
             EnderecoEspecifico endereco = cliente.getEndereco();
 
             stmt.setString(1, cliente.getPrimeiroNome());
@@ -165,42 +108,23 @@ public class ClienteDAO {
             stmt.setString(7, cliente.getCpf());
             stmt.setLong(8, endereco.getEndereco().getId());
 
-            int registrosInseridos = stmt.executeUpdate();
+            int resultado = stmt.executeUpdate();
 
-            if(registrosInseridos == 0){
-                throw new OrdemServicoException("Não foi possível cadastrar o cliente");
+            if(resultado == 0){
+                throw new OrdemServicoException("Não foi possível cadastrar o cliente " + cliente.getPrimeiroNome());
             }
 
-            resultSet = stmt.getGeneratedKeys();
-
-            if(resultSet.next()){
-                long id = resultSet.getLong(1);
-
-                cliente.setId(id);
-
-                emailClienteDAO.inserirEmails(id, cliente.getEmails(), conexao);
-                telefoneClienteDAO.inserirTelefones(id, cliente.getTelefones(), conexao);
-
-                conexao.commit();
-            }
-            else {
-                throw new OrdemServicoException("Não foi possível cadastrar o cliente");
+            try(ResultSet resultSet = stmt.getGeneratedKeys()) {
+                if(resultSet.next()){
+                    cliente.setId(resultSet.getLong(1));
+                }
             }
         }
-        catch(SQLException e){
-            if(conexao != null){
-                conexao.rollback();
-            }
-
-            throw new OrdemServicoException("Não foi possível cadastrar o cliente");
-        } catch (Exception e) {
-            throw new RuntimeException("Não foi possível estabelecer conexão com o banco de dados");
-        }
-        finally {
-           conexaoBD.encerrarConexoes(resultSet, stmt, conexao);
+        catch (Exception e){
+            throw new OrdemServicoException("Não foi possível cadastrar o cliente " + cliente.getPrimeiroNome());
         }
 
-        return null;
+        return cliente.getId();
     }
 
     private Cliente criarClienteBO(ResultSet resultSet) throws Exception {
@@ -214,7 +138,7 @@ public class ClienteDAO {
         String numeroEndereco = resultSet.getString("numero_endereco");
         long idEndereco = resultSet.getLong("id_endereco");
 
-        Endereco endereco = enderecoServicos.obterEnderecoPorID(idEndereco);
+        Endereco endereco = enderecoDAO.obterEnderecoPorID(idEndereco);
         EnderecoEspecifico enderecoEspecifico = new EnderecoEspecifico(numeroEndereco, complementoEndereco, endereco);
 
         List<Email> emails = emailClienteDAO.obterEmailsCliente(id);
