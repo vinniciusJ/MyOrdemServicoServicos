@@ -1,9 +1,8 @@
-package br.unioeste.geral.ordemservico.servico.service;
+package br.unioeste.geral.ordemservico.servico.service.cliente;
 
 import br.unioeste.apoio.bd.ConexaoBD;
 import br.unioeste.geral.ordemservico.bo.cliente.Cliente;
-import br.unioeste.geral.ordemservico.servico.col.ClienteCOL;
-import br.unioeste.geral.ordemservico.servico.dao.cliente.ClienteDAO;
+import br.unioeste.geral.ordemservico.servico.col.cliente.ClienteCOL;
 import br.unioeste.geral.ordemservico.servico.dao.cliente.ClienteDAO;
 import br.unioeste.geral.ordemservico.servico.dao.cliente.EmailClienteDAO;
 import br.unioeste.geral.ordemservico.servico.dao.cliente.TelefoneClienteDAO;

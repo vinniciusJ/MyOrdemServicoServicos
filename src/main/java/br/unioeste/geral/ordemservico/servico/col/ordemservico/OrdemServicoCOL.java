@@ -1,9 +1,12 @@
-package br.unioeste.geral.ordemservico.servico.col;
+package br.unioeste.geral.ordemservico.servico.col.ordemservico;
 
 import br.unioeste.geral.ordemservico.bo.cliente.Cliente;
 import br.unioeste.geral.ordemservico.bo.funcionario.Funcionario;
 import br.unioeste.geral.ordemservico.bo.ordemservico.OrdemServico;
 import br.unioeste.geral.ordemservico.bo.servico.Servico;
+import br.unioeste.geral.ordemservico.servico.col.servico.ServicoCOL;
+import br.unioeste.geral.ordemservico.servico.col.cliente.ClienteCOL;
+import br.unioeste.geral.ordemservico.servico.col.funcionario.FuncionarioCOL;
 
 import java.time.LocalDate;
 import java.util.List;

@@ -1,4 +1,4 @@
-package br.unioeste.geral.ordemservico.servico.col;
+package br.unioeste.geral.ordemservico.servico.col.tiposervico;
 
 import br.unioeste.geral.ordemservico.bo.tiposervico.TipoServico;
 

@@ -1,4 +1,4 @@
-package br.unioeste.geral.ordemservico.servico.col;
+package br.unioeste.geral.ordemservico.servico.col.cliente;
 
 import br.unioeste.geral.endereco.bo.enderecoespecifico.EnderecoEspecifico;
 import br.unioeste.geral.ordemservico.bo.cliente.Cliente;

@@ -1,7 +1,8 @@
-package br.unioeste.geral.ordemservico.servico.col;
+package br.unioeste.geral.ordemservico.servico.col.servico;
 
 import br.unioeste.geral.ordemservico.bo.servico.Servico;
 import br.unioeste.geral.ordemservico.bo.tiposervico.TipoServico;
+import br.unioeste.geral.ordemservico.servico.col.tiposervico.TipoServicoCOL;
 
 public class ServicoCOL {
     private final TipoServicoCOL tipoServicoCOL;

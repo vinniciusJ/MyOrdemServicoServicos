@@ -1,8 +1,7 @@
-package br.unioeste.geral.ordemservico.servico.col;
+package br.unioeste.geral.ordemservico.servico.col.funcionario;
 
 import br.unioeste.geral.endereco.bo.enderecoespecifico.EnderecoEspecifico;
 import br.unioeste.geral.ordemservico.bo.funcionario.Funcionario;
-import br.unioeste.geral.ordemservico.servico.dao.funcionario.FuncionarioDAO;
 import br.unioeste.geral.pessoa.bo.email.Email;
 import br.unioeste.geral.pessoa.bo.telefone.Telefone;
 import br.unioeste.geral.pessoa.servico.col.CPFCOL;

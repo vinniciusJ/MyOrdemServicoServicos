@@ -1,8 +1,8 @@
-package br.unioeste.geral.ordemservico.servico.service;
+package br.unioeste.geral.ordemservico.servico.service.servico;
 
 import br.unioeste.apoio.bd.ConexaoBD;
 import br.unioeste.geral.ordemservico.bo.servico.Servico;
-import br.unioeste.geral.ordemservico.servico.col.ServicoCOL;
+import br.unioeste.geral.ordemservico.servico.col.servico.ServicoCOL;
 import br.unioeste.geral.ordemservico.servico.dao.servico.ServicoDAO;
 import br.unioeste.geral.ordemservico.servico.exception.OrdemServicoException;
 
