@@ -142,7 +142,7 @@ public class FuncionarioDAO {
         EnderecoEspecifico enderecoEspecifico = new EnderecoEspecifico(numeroEndereco, complementoEndereco, endereco);
 
         List<Email> emails = emailFuncionarioDAO.obterEmailsFuncionario(id);
-        List<Telefone> telefones = telefoneFuncionarioDAO.obterTelefonesCliente(id);
+        List<Telefone> telefones = telefoneFuncionarioDAO.obterTelefonesFuncionario(id);
 
         Funcionario funcionario = new Funcionario();
 
