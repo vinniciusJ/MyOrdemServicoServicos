@@ -81,8 +81,8 @@ public class TelefoneClienteDAO {
         long id = resultSet.getLong("id");
 
         String numero = resultSet.getString("numero");
-        String numeroDDD = resultSet.getString("ddd");
-        String numeroDDI = resultSet.getString("ddd");
+        String numeroDDD = resultSet.getString("ddd_ddd");
+        String numeroDDI = resultSet.getString("ddi_ddi");
 
         DDD ddd = dddDAO.obterDDD(numeroDDD);
         DDI ddi = ddiDAO.obterDDI(numeroDDI);
