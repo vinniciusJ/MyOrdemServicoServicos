@@ -26,7 +26,7 @@ public class ClienteDAO {
 
         this.emailClienteDAO = new EmailClienteDAO(conexao);
         this.telefoneClienteDAO = new TelefoneClienteDAO(conexao);
-        this.enderecoDAO = new EnderecoDAO();
+        this.enderecoDAO = new EnderecoDAO(conexao);
     }
 
     public List<Cliente> obterClientes() throws Exception {

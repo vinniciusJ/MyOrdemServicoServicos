@@ -26,8 +26,8 @@ public class TelefoneFuncionarioDAO {
     public TelefoneFuncionarioDAO(Connection conexao) {
         this.conexao = conexao;
 
-        this.dddDAO = new DDDDAO();
-        this.ddiDAO = new DDIDAO();
+        this.dddDAO = new DDDDAO(conexao);
+        this.ddiDAO = new DDIDAO(conexao);
     }
 
     public List<Telefone> obterTelefonesCliente(Long idFuncionario) throws Exception {

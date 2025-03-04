@@ -26,7 +26,7 @@ public class FuncionarioDAO {
 
         this.emailFuncionarioDAO = new EmailFuncionarioDAO(conexao);
         this.telefoneFuncionarioDAO = new TelefoneFuncionarioDAO(conexao);
-        this.enderecoDAO = new EnderecoDAO();
+        this.enderecoDAO = new EnderecoDAO(conexao);
     }
 
     public List<Funcionario> obterFuncionarios() throws Exception {

@@ -87,7 +87,7 @@ public class OrdemServicoDAO {
 
             try(ResultSet resultSet = stmt.getGeneratedKeys()) {
                 if(resultSet.next()) {
-                    ordemServico.setNumero(Long.parseLong(resultSet.getString(1)));
+                    ordemServico.setNumero(resultSet.getString(1));
                 }
             }
         }
@@ -113,7 +113,7 @@ public class OrdemServicoDAO {
 
         OrdemServico ordemServico = new OrdemServico();
 
-        ordemServico.setNumero(Long.parseLong(numero));
+        ordemServico.setNumero(numero);
         ordemServico.setDescricao(descricao);
         ordemServico.setDataEmissao(dataEmissao);
         ordemServico.setFuncionarioResponsavel(funcionarioResponsavel);

@@ -93,7 +93,7 @@ public class UCOrdemServicoServicos {
             try{
                 String numero = ordemServicoDAO.inserirOrdemServico(ordemServico);
 
-                ordemServico.setNumero(Long.parseLong(numero));
+                ordemServico.setNumero(numero);
 
                 for(Servico servico: ordemServico.getServicosRealizados()){
                     servicoDAO.inserirServico(numero, servico);
