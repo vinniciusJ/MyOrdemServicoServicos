@@ -52,7 +52,7 @@ public class TelefoneClienteDAO {
     public Long inserirTelefone(Long idCliente, Telefone telefone) throws Exception {
         String sql = "INSERT INTO telefone_cliente (numero, ddd_ddd, ddi_ddi, id_cliente) values (?, ?, ?, ?)";
 
-        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
+        try(PreparedStatement stmt = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
             stmt.setString(1, telefone.getNumero());
             stmt.setString(2, telefone.getDdd().getNumero());
             stmt.setString(3, telefone.getDdi().getNumero());

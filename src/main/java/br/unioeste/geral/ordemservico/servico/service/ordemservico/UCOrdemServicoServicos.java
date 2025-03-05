@@ -80,7 +80,7 @@ public class UCOrdemServicoServicos {
     }
 
     public OrdemServico cadastrarOrdemServico(OrdemServico ordemServico) throws Exception {
-        if(!ordemServicoCOL.validarOrdemServico(ordemServico)){
+        if(!ordemServicoCOL.validarOrdemServicoForm(ordemServico)){
             throw new OrdemServicoException("Ordem de serviço inválida");
         }
 

@@ -96,7 +96,7 @@ public class FuncionarioDAO {
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     """;
 
-        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
+        try(PreparedStatement stmt = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
             EnderecoEspecifico endereco = funcionario.getEndereco();
 
             stmt.setString(1, funcionario.getPrimeiroNome());

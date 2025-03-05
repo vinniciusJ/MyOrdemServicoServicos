@@ -75,7 +75,7 @@ public class UCClienteServicos {
     }
 
     public Cliente cadastrarCliente(Cliente cliente) throws Exception{
-        if(!clienteCOL.validarCliente(cliente)){
+        if(!clienteCOL.validarClienteForm(cliente)){
             throw new OrdemServicoException("Cliente inválido");
         }
 

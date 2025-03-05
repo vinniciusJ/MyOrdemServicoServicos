@@ -65,7 +65,7 @@ public class ServicoDAO {
     public Long inserirServico(String numeroOrdemServico, Servico servico) throws Exception {
         String sql = "INSERT INTO servico (valor_cobrado, numero_ordem_servico, id_tipo_servico) VALUES (?, ?, ?)";
 
-        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
+        try(PreparedStatement stmt = conexao.prepareStatement(sql,PreparedStatement.RETURN_GENERATED_KEYS)){
             stmt.setDouble(1, servico.getValorCobrado());
             stmt.setString(2, numeroOrdemServico);
             stmt.setLong(3, servico.getTipoServico().getId());

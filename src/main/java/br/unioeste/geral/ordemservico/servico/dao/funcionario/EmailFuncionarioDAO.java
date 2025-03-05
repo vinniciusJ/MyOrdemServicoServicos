@@ -21,7 +21,7 @@ public class EmailFuncionarioDAO {
 
         List<Email> emails = new ArrayList<>();
 
-        try(PreparedStatement stmt = conexao.prepareStatement(sql)) {
+        try(PreparedStatement stmt = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
             stmt.setLong(1, idFuncionario);
 
             try(ResultSet resultSet = stmt.executeQuery()) {
@@ -41,8 +41,8 @@ public class EmailFuncionarioDAO {
         String sql = "INSERT INTO email_funcionario (id_funcionario, endereco) VALUES (?, ?)";
 
         try(PreparedStatement stmt = conexao.prepareStatement(sql)){
-            stmt.setString(1, email.getEndereco());
-            stmt.setLong(2, idFuncionario);
+            stmt.setLong(1, idFuncionario);
+            stmt.setString(2, email.getEndereco());
 
             int resultado = stmt.executeUpdate();
 

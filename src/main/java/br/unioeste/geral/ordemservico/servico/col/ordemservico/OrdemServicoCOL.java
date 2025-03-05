@@ -22,6 +22,10 @@ public class OrdemServicoCOL {
         funcionarioCOL = new FuncionarioCOL();
     }
 
+    public boolean validarID(Long id) {
+        return id != null && id > 0;
+    }
+
     public boolean validarNumero(String numero) {
         return numero != null && !numero.isBlank();
     }
@@ -46,6 +50,10 @@ public class OrdemServicoCOL {
         return servicos.stream().allMatch(servicoCOL::validarServico);
     }
 
+    public boolean validarServicosForm(List<Servico> servicos){
+        return servicos.stream().allMatch(servicoCOL::validarServicoForm);
+    }
+
     public boolean validarOrdemServico(OrdemServico ordemServico) throws Exception {
         if(ordemServico == null){
             return false;
@@ -57,5 +65,18 @@ public class OrdemServicoCOL {
                 validarFuncionario(ordemServico.getFuncionarioResponsavel()) &&
                 validarServicos(ordemServico.getServicosRealizados());
 
+    }
+
+    public boolean validarOrdemServicoForm(OrdemServico ordemServico) throws Exception {
+        if(ordemServico == null){
+            return false;
+        }
+
+        return validarNumero(ordemServico.getNumero()) &&
+                validarDataEmissao(ordemServico.getDataEmissao()) &&
+                validarDescricao(ordemServico.getDescricao()) &&
+                validarServicosForm(ordemServico.getServicosRealizados()) &&
+                validarID(ordemServico.getCliente().getId()) &&
+                validarID(ordemServico.getFuncionarioResponsavel().getId());
     }
 }

@@ -39,8 +39,25 @@ public class ClienteCOL {
 
         return validarStringVaziaOuNula(cliente.getPrimeiroNome()) &&
                 validarStringVaziaOuNula(cliente.getUltimoNome()) &&
-                cpfCOL.validarCPF(cliente.getCpf()) &&
+                cpfCOL.validarCPF(cliente.getCpf())  &&
                 enderecoEspecificoCOL.validarEnderecoEspecifico(enderecoEspecifico) &&
+                emailCOL.validarEmails(emails) &&
+                telefoneCOL.validarTelefones(telefones);
+    }
+
+    public boolean validarClienteForm(Cliente cliente) throws Exception {
+        if(cliente == null){
+            return false;
+        }
+
+        EnderecoEspecifico enderecoEspecifico = cliente.getEndereco();
+        List<Email> emails = cliente.getEmails();
+        List<Telefone> telefones = cliente.getTelefones();
+
+        return validarStringVaziaOuNula(cliente.getPrimeiroNome()) &&
+                validarStringVaziaOuNula(cliente.getUltimoNome()) &&
+                cpfCOL.validarCPF(cliente.getCpf())  &&
+                enderecoEspecificoCOL.validarEnderecoEspecificoForm(enderecoEspecifico) &&
                 emailCOL.validarEmails(emails) &&
                 telefoneCOL.validarTelefones(telefones);
     }

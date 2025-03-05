@@ -30,4 +30,12 @@ public class ServicoCOL {
 
         return validarValorCobrado(servico.getValorCobrado()) && validarTipoServico(servico.getTipoServico());
     }
+
+    public boolean validarServicoForm(Servico servico){
+        if(servico == null){
+            return false;
+        }
+
+        return validarValorCobrado(servico.getValorCobrado()) && validarID(servico.getTipoServico().getId());
+    }
 }

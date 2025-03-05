@@ -45,6 +45,23 @@ public class FuncionarioCOL {
                 telefoneCOL.validarTelefones(telefones);
     }
 
+    public boolean validarFuncionarioForm(Funcionario funcionario) throws Exception {
+        if(funcionario == null){
+            return false;
+        }
+
+        EnderecoEspecifico enderecoEspecifico = funcionario.getEndereco();
+        List<Email> emails = funcionario.getEmails();
+        List<Telefone> telefones = funcionario.getTelefones();
+
+        return validarStringVaziaOuNula(funcionario.getPrimeiroNome()) &&
+                validarStringVaziaOuNula(funcionario.getUltimoNome()) &&
+                cpfCOL.validarCPF(funcionario.getCpf()) &&
+                enderecoEspecificoCOL.validarEnderecoEspecificoForm(enderecoEspecifico) &&
+                emailCOL.validarEmails(emails) &&
+                telefoneCOL.validarTelefones(telefones);
+    }
+
     private boolean validarStringVaziaOuNula(String string){
         return string != null && !string.trim().isEmpty();
     }

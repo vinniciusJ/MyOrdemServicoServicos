@@ -96,7 +96,7 @@ public class ClienteDAO {
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                     """;
 
-        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
+        try(PreparedStatement stmt = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
             EnderecoEspecifico endereco = cliente.getEndereco();
 
             stmt.setString(1, cliente.getPrimeiroNome());

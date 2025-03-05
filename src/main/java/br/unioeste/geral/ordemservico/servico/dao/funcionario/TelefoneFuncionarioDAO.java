@@ -50,7 +50,7 @@ public class TelefoneFuncionarioDAO {
     public Long inserirTelefone(Long idFuncionario, Telefone telefone) throws Exception {
         String sql = "INSERT INTO telefone_funcionario (numero, ddd_ddd, ddi_ddi, id_funcionario) values (?, ?, ?, ?)";
 
-        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
+        try(PreparedStatement stmt = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
             stmt.setString(1, telefone.getNumero());
             stmt.setString(2, telefone.getDdd().getNumero());
             stmt.setString(3, telefone.getDdi().getNumero());

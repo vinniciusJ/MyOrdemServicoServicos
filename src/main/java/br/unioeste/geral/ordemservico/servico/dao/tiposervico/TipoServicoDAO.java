@@ -61,7 +61,7 @@ public class TipoServicoDAO {
     public Long inserirTipoServico(TipoServico tipoServico) throws OrdemServicoException {
         String sql = "INSERT INTO tipo_servico (nome, valor_referencia) VALUES (?, ?)";
 
-        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
+        try(PreparedStatement stmt = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
             stmt.setString(1, tipoServico.getNome());
             stmt.setDouble(2, tipoServico.getValorReferencia());
 

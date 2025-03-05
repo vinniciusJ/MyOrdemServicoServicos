@@ -38,11 +38,11 @@ public class EmailClienteDAO {
     }
 
     public Long inserirEmail(Long idCliente, Email email) throws Exception {
-        String sql = "INSERT INTO email_cliente (id_cliente, email) VALUES (?, ?)";
+        String sql = "INSERT INTO email_cliente (id_cliente, endereco) VALUES (?, ?)";
 
-        try(PreparedStatement stmt = conexao.prepareStatement(sql)){
-            stmt.setString(1, email.getEndereco());
-            stmt.setLong(2, idCliente);
+        try(PreparedStatement stmt = conexao.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)){
+            stmt.setLong(1, idCliente);
+            stmt.setString(2, email.getEndereco());
 
             int resultado = stmt.executeUpdate();
 

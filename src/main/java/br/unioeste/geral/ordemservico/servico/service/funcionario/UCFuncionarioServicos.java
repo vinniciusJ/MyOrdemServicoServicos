@@ -75,7 +75,7 @@ public class UCFuncionarioServicos {
     }
 
     public Funcionario cadastrarFuncionario(Funcionario funcionario) throws Exception{
-        if(!funcionarioCOL.validarFuncionario(funcionario)){
+        if(!funcionarioCOL.validarFuncionarioForm(funcionario)){
             throw new OrdemServicoException("Funcionário inválido");
         }
 
