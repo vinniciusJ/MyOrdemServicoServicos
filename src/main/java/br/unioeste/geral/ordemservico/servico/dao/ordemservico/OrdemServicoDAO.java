@@ -69,6 +69,27 @@ public class OrdemServicoDAO {
         return ordemServicos;
     }
 
+    public Double obterValorTotalOrdemServico(String numeroOrdemServico) throws Exception {
+        String sql = "SELECT SUM(servico.valor_cobrado) as valor_total FROM servico WHERE numero_ordem_servico = ? ";
+
+        double valorTotal = 0.0;
+
+        try(PreparedStatement stmt = conexao.prepareStatement(sql)) {
+            stmt.setString(1, numeroOrdemServico);
+
+            try(ResultSet resultSet = stmt.executeQuery()) {
+                if(resultSet.next()) {
+                    valorTotal = resultSet.getDouble("valor_total");
+                }
+            }
+        }
+        catch(Exception e) {
+            throw new OrdemServicoException("Não foi possível obter o valor total da ordem de serviço " + numeroOrdemServico);
+        }
+
+        return valorTotal;
+    }
+
     public String inserirOrdemServico(OrdemServico ordemServico) throws Exception {
         String sql = "INSERT INTO ordem_servico(numero, data_emissao, descricao, id_funcionario, id_cliente) VALUES(?,?,?,?,?)";
 
@@ -111,6 +132,8 @@ public class OrdemServicoDAO {
 
         List<Servico> servicos = servicoDAO.obterServicosPorNumeroOrdemServico(numero);
 
+        Double valorTotal = obterValorTotalOrdemServico(numero);
+
         OrdemServico ordemServico = new OrdemServico();
 
         ordemServico.setNumero(numero);
@@ -119,6 +142,7 @@ public class OrdemServicoDAO {
         ordemServico.setFuncionarioResponsavel(funcionarioResponsavel);
         ordemServico.setCliente(cliente);
         ordemServico.setServicosRealizados(servicos);
+        ordemServico.setValorTotal(valorTotal);
 
         return ordemServico;
     }
